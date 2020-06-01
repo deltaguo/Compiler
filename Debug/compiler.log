@@ -1,0 +1,9 @@
+﻿  lexicalAnalysis.cpp
+D:\compiler\lexicalAnalysis.cpp(8,20): warning C4018: “<”: 有符号/无符号不匹配
+D:\compiler\lexicalAnalysis.cpp(13,13): warning C4018: “<”: 有符号/无符号不匹配
+D:\compiler\lexicalAnalysis.cpp(18,13): warning C4018: “<”: 有符号/无符号不匹配
+  main.cpp
+D:\compiler\main.cpp(36,13): warning C4101: “gc”: 未引用的局部变量
+  syntaxAnalysis.cpp
+  正在生成代码...
+  compiler.vcxproj -> D:\compiler\Debug\compiler.exe

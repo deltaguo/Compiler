@@ -1,0 +1,2 @@
+D:\compiler\Debug\compiler.exe
+D:\compiler\Debug\compiler.pdb
