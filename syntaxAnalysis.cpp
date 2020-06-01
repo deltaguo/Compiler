@@ -119,7 +119,44 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>> list)
 	return exp.top();
 	return nullptr;
 }
-TreeNode* generic::genericStatement(std::list<std::pair<size_t, std::string>> list)
+generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::string>> list)
 {
+	generalTreeNode* root = new generalTreeNode("main");
+	std::stack<generalTreeNode*> statement;
+	std::stack<size_t> edge;
+	statement.push(root);
+	std::list<std::pair<size_t, std::string>>::iterator iter = list.begin();
+	while (iter != list.end()) {
+		size_t id = iter->first;
+		if (id && id < 12) {
+			generalTreeNode* p = statement.top()->first_son;
+			if (p) {
+				while (p->next_bro)p = p->next_bro;
+				p->next_bro = new generalTreeNode(std::to_string(id));
+				p = p->next_bro;
+			}
+			else {
+				statement.top()->first_son = new generalTreeNode(std::to_string(id));
+				p = statement.top()->first_son;
+			}
+			statement.push(p);
+		}
+		else if (id == 16 || id == 18 || id == 20) {
+			edge.push(id);
+		}
+		else if (id == 17 || id == 19 || id == 21) {
+			if (!edge.empty()&&edge.top() == id-1) {
+				edge.pop();
+				if(id == 17)statement.pop();
+			}
+			else {
+				std::cout << "括号匹配错误" << std::endl;
+			}
+		}//处理赋值表达式(=后要接表达式 return后要接表达式 小括号内是表达式)
+		else if (true) {
+
+		}
+
+	}
 	return nullptr;
 }

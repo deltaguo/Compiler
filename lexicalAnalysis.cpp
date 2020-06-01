@@ -7,7 +7,6 @@
 std::string scanner::preprocessing(std::string code) {
 	for (int i = 0; i < code.size(); i++)
 	{	
-		//delete all annotation
 		if (code[i] == '/' && code[i + 1] == '/') {
 			int j = i + 2;
 			while (j < code.size() && code[j] != '\n')j++;
@@ -19,7 +18,6 @@ std::string scanner::preprocessing(std::string code) {
 				if (code[j - 1] == '*' && code[j] == '/') break;
 			code.erase(i, j - i + 1);
 		}
-		//delete all useless ENTER and TAB
 		if (code[i] == '\n'||code[i]=='\t') {
 			code.erase(i--, 1);
 		}
@@ -28,21 +26,21 @@ std::string scanner::preprocessing(std::string code) {
 }
 size_t scanner::isKeyWord(const std::string& word)
 {
-	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) < 11) {
+	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) < 12) {
 		return this->sym_table.at(word);
 	}
 	return 0;
 }
 size_t scanner::isSeparater(const std::string& word)
 {
-	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) >= 11 && this->sym_table.at(word) < 19) {
+	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) >= 12 && this->sym_table.at(word) < 22) {
 		return this->sym_table.at(word);
 	}
 	return 0;
 }
 size_t scanner::isOperator(const std::string& word)
 {
-	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) >= 19) {
+	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) >= 22) {
 		return this->sym_table.at(word);
 	}
 	return 0;
@@ -53,7 +51,7 @@ bool scanner::isNumber(const std::string& word)
 	for (char ch : word) {
 		if (ch == '.') {
 			if (decimal) {
-				return "";
+				return false;
 			}
 			else {
 				decimal = true;
@@ -138,15 +136,30 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 		++iter;
 		if (iter != res.end())ch2 = iter->first;
 		--iter;
-		if (ch2 == 29 && (ch1==23|| ch1 == 24 || ch1 == 29 || ch1 == 32)) {
+		if (ch2 == 32 && (ch1==26|| ch1 == 27 || ch1 == 32 || ch1 == 35)) {
 			switch (ch1) {
-			case 23:iter->first = 26;break;
-			case 24:iter->first = 27;break;
-			case 29:iter->first = 25;break;
+			case 26:iter->first = 29;break;
+			case 27:iter->first = 30;break;
 			case 32:iter->first = 28;break;
+			case 35:iter->first = 31;break;
 			}
 			iter = res.erase(++iter);
 			continue;
+		}
+		size_t quotation = iter->first;
+		if (quotation == 14 || quotation == 15) {
+			std::string const_str;
+			std::list<std::pair<size_t, std::string>>::iterator now = iter;
+			++iter;
+			while (iter != res.end() && iter->first != quotation) {
+				const_str.append(iter->second);
+				const_str.append(" ");
+				++iter;
+			}
+			const_str.pop_back();
+			now->first = 102;
+			now->second = const_str;
+			iter = res.erase(++now, ++iter);
 		}
 		++iter;
 	}

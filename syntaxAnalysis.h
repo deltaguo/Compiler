@@ -27,5 +27,5 @@ public:
 	bool priority(size_t a, size_t b);
 	TreeNode* genericExp(std::string str);
 	TreeNode* genericExp(std::list<std::pair<size_t, std::string>> list);
-	TreeNode* genericStatement(std::list<std::pair<size_t, std::string>> list);
+	generalTreeNode* genericStatement(std::list<std::pair<size_t, std::string>> list);
 };
