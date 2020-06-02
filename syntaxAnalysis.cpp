@@ -12,6 +12,7 @@ TreeNode::TreeNode(std::string val)
 	this->first_son = nullptr;
 	this->next_bro = nullptr;
 }
+
 TreeNode::TreeNode(char val)
 {
 	this->val.push_back(val);
@@ -20,6 +21,7 @@ TreeNode::TreeNode(char val)
 	this->first_son = nullptr;
 	this->next_bro = nullptr;
 }
+
 TreeNode::TreeNode()
 {
 	this->val = "";
@@ -34,23 +36,27 @@ generalTreeNode::generalTreeNode(std::string val)
 	this->first_son = nullptr;
 	this->next_bro = nullptr;
 }
+
 generalTreeNode::generalTreeNode()
 {
 	this->val = "";
 	this->first_son = nullptr;
 	this->next_bro = nullptr;
 }
+
 bool generic::priority(char a, char b)
 {
 	if (b == '*' || b == '/')return false;
 	if (a == '*' || a == '/')return true;
 	return false;
 }
+
 bool generic::priority(size_t a, size_t b) {
 	if (b == 21 || b == 22)return false;
 	if (a == 21 || a == 22)return true;
 	return false;
 }
+
 TreeNode* generic::genericExp(std::string str) {
 	std::stack<char> op;
 	std::stack<TreeNode*> exp;
@@ -78,7 +84,7 @@ TreeNode* generic::genericExp(std::string str) {
 			while (op.top() != '(')genericMiniTree();
 			op.pop();
 		}
-		else if (isalpha(i) || isdigit(i)) {
+		else if (isalnum(i)) {
 			exp.push(new TreeNode(i));
 		}
 		else {
@@ -89,6 +95,7 @@ TreeNode* generic::genericExp(std::string str) {
 	while (!op.empty())genericMiniTree();
 	return exp.top();
 }
+
 TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>> list)
 {	
 	std::stack<size_t> op;
@@ -128,6 +135,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>> list)
 	while (!op.empty())genericMiniTree();
 	return exp.top();
 }
+
 TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	auto i = start;
@@ -170,6 +178,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	while (!op.empty())genericMiniTree();
 	return exp.top();
 }
+
 TreeNode* generic::genericAssignment(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end) {
 	TreeNode* root = new TreeNode("32");
 	root->left = new TreeNode(start->second);
@@ -179,6 +188,7 @@ TreeNode* generic::genericAssignment(std::list<std::pair<size_t, std::string>>::
 	root->first_son = root->left;
 	return root;
 }
+
 TreeNode* generic::genericLogicExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	std::list<std::pair<size_t, std::string>>::iterator iter = start;
@@ -195,6 +205,7 @@ TreeNode* generic::genericLogicExp(std::list<std::pair<size_t, std::string>>::it
 	}
 	return nullptr;
 }
+
 generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::string>>::iterator start,std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	generalTreeNode* root = new generalTreeNode("main");
@@ -204,7 +215,7 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 	statement.push(root);
 	auto iter = start;
 	while (iter != end) {
-		std::cout <<"**********************"<< iter->first << " " << iter->second << std::endl;
+		//std::cout <<"**********************"<< iter->first << " " << iter->second << std::endl;
 		size_t id = iter->first;
 		if (id && id < 12) { //处理关键字
 			generalTreeNode* p = statement.top()->first_son;
@@ -223,6 +234,17 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 				if (ed->first != 20) {
 					std::cout << "表达式需要括号括起！";
 					return nullptr;
+				}
+				while (1) {
+					if (ed->first == 21) {
+						auto next = ++ed;
+						if (next->first == 12 || next->first == 16 || next->first == 100) {
+							--ed;
+							break;
+						}
+						continue;
+					}
+					++ed;
 				}
 				while (ed->first != 21)++ed;
 				if (id == 11) statement.top()->first_son = genericExp(++iter, ed);
@@ -271,7 +293,7 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 			}
 		}
 		else if (id == 12) {//分号表示语句结束 可以出栈
-			std::cout << "分号" << std::endl;
+			//std::cout << "分号" << std::endl;
 			statement.pop();
 		}
 		else if(id == 13){}
@@ -281,6 +303,6 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 		}
 		++iter;
 	}
-	std::cout << "stack" << " " << statement.size() << std::endl;
+	//std::cout << "stack" << " " << statement.size() << std::endl;
 	return root;
 }

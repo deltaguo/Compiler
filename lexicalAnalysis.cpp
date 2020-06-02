@@ -24,6 +24,7 @@ std::string scanner::preprocessing(std::string code) {
 	}
 	return code;
 }
+
 size_t scanner::isKeyWord(const std::string& word)
 {
 	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) < 12) {
@@ -31,6 +32,7 @@ size_t scanner::isKeyWord(const std::string& word)
 	}
 	return 0;
 }
+
 size_t scanner::isSeparater(const std::string& word)
 {
 	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) >= 12 && this->sym_table.at(word) < 22) {
@@ -38,6 +40,7 @@ size_t scanner::isSeparater(const std::string& word)
 	}
 	return 0;
 }
+
 size_t scanner::isOperator(const std::string& word)
 {
 	if (this->sym_table.find(word) != this->sym_table.end() && this->sym_table.at(word) >= 22) {
@@ -45,6 +48,7 @@ size_t scanner::isOperator(const std::string& word)
 	}
 	return 0;
 }
+
 bool scanner::isNumber(const std::string& word)
 {
 	bool decimal = false;
@@ -63,16 +67,18 @@ bool scanner::isNumber(const std::string& word)
 	}
 	return true;
 }
+
 bool scanner::isVariaty(const std::string& word)
 {
 	if (!isalpha(word[0]) && word[0] != '_')return "";
 	for (char ch : word) {
-		if (!isalpha(ch) && !isdigit(ch) && ch != '_') {
+		if (!iscsym(ch)) {
 			return false;
 		}
 	}
 	return true;
 }
+
 std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& code)
 {
 	std::list<std::pair<size_t, std::string>> res;
