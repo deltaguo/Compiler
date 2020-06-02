@@ -6,6 +6,7 @@
 #include "syntaxAnalysis.h"
 
 void transf(TreeNode* root);
+void transf(generalTreeNode* root);
 
 int main(int argc,char *argv[])
 {
@@ -29,26 +30,12 @@ int main(int argc,char *argv[])
     std::cout << code << std::endl;
     //标识符识别
     std::list<std::pair<size_t, std::string>> table = sc.analysis(code);
-    for (auto i : table) {
+    /*for (auto i : table) {
         std::cout << i.first << "     " << i.second << std::endl;
     }
-    TreeNode* root = new TreeNode();
+    std::cout << "***********************" << std::endl;*/
     generic gc;
-    std::list<std::pair<size_t, std::string>> test = {
-       {100,"i"},
-       {19,"运算符"},
-       {100,"j"},
-       {21,"运算符"},
-       {101,"8"},
-       {20,"运算符"},
-       {17,"分隔符"},
-       {100,"i"},
-       {19,"运算符"},
-       {100,"j"},
-       {21,"运算符"},
-       {101,"7"},
-       {18,"分隔符"}
-    };
+    generalTreeNode* root = gc.genericStatement(table.begin(),table.end());
     transf(root);
     read.close();
     return 0;
@@ -59,6 +46,16 @@ void transf(TreeNode* root) {
     transf(root->left);
     std::cout << root->val <<" ";
     transf(root->right);
+}
+
+void transf(generalTreeNode* root) {
+    if (!root)return;
+    std::cout << root->val << " ";
+    generalTreeNode* p = root->first_son;
+    while (p) {
+        transf(p);
+        p = p->next_bro;
+    }
 }
 
 
