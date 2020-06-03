@@ -106,34 +106,42 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 		}
 	};
 	for (char ch : code) {
-		if (ch != ' ') {
-			std::string c;
-			c.push_back(ch);
-			size_t id = isSeparater(c);
-			if (id) {
-				if (word.size()) {
-					insertWord();
-					word.clear();
-				}
-				res.push_back(std::make_pair(id, "分隔符"));
-			}
-			else {
-				id = isOperator(c);
+		try {
+			if (!isascii(ch))throw std::runtime_error("非法字符!");
+			if (ch != ' ') {
+				std::string c;
+				c.push_back(ch);
+				size_t id = isSeparater(c);
 				if (id) {
 					if (word.size()) {
 						insertWord();
 						word.clear();
 					}
-					res.push_back(std::make_pair(id, "运算符"));
+					res.push_back(std::make_pair(id, "分隔符"));
 				}
 				else {
-					word.push_back(ch);
+					id = isOperator(c);
+					if (id) {
+						if (word.size()) {
+							insertWord();
+							word.clear();
+						}
+						res.push_back(std::make_pair(id, "运算符"));
+					}
+					else {
+						word.push_back(ch);
+					}
 				}
 			}
+			else {
+				insertWord();
+			}
 		}
-		else{
-			insertWord();
+		catch (const std::exception& e) {
+			std::cerr << "ERROR:" << e.what() << std::endl;
+			exit(0);
 		}
+		
 	}
 	std::list<std::pair<size_t, std::string>>::iterator iter = res.begin();
 	while(iter!=res.end()) { //处理>=,<=,==,!=,

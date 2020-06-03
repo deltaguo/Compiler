@@ -2,9 +2,10 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <deque>
 #include "lexicalAnalysis.h"
 #include "syntaxAnalysis.h"
-#include <deque>
+
 
 void transf(TreeNode* root);
 void transf(generalTreeNode* root);
@@ -36,12 +37,12 @@ int main(int argc,char *argv[])
     scanner sc;
     //预处理
     code = sc.preprocessing(code);
-    std::cout << code << std::endl;
+    //std::cout << code << std::endl;
     //标识符识别
     auto table = sc.analysis(code);
-    for (auto i : table) {
+    /*for (auto i : table) {
         std::cout << i.first << "     " << i.second << std::endl;
-    }
+    }*/
     //语法分析 并生成树
     generic gc;
     generalTreeNode* root = gc.genericStatement(table.begin(), table.end());
@@ -87,6 +88,17 @@ void transf(generalTreeNode* root) {
         transf(p);
         p = p->next_bro;
     }
+    /*
+    std::deque<std::string> queue;
+    auto p = root;
+    while (p || !queue.empty()) {
+        auto q = p->first_son;
+        while (q->next_bro) {
+            queue.push_back(q->val);
+            q = q->next_bro;
+        }
+
+    }*/
 }
 
 

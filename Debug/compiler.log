@@ -1,8 +1,2 @@
-﻿  lexicalAnalysis.cpp
-D:\compiler\lexicalAnalysis.cpp(8,20): warning C4018: “<”: 有符号/无符号不匹配
-D:\compiler\lexicalAnalysis.cpp(12,13): warning C4018: “<”: 有符号/无符号不匹配
-D:\compiler\lexicalAnalysis.cpp(17,13): warning C4018: “<”: 有符号/无符号不匹配
-  syntaxAnalysis.cpp
-  正在生成代码...
-  LINK : 没有找到 D:\compiler\Debug\compiler.exe 或上一个增量链接没有生成它；正在执行完全链接
+﻿  main.cpp
   compiler.vcxproj -> D:\compiler\Debug\compiler.exe
