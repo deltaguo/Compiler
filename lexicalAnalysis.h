@@ -7,6 +7,8 @@ public:
 	scanner() {};
 	~scanner() {};
 	std::string preprocessing(std::string code);
+	std::list<std::pair<size_t, std::string>> analysis(const std::string& code);
+private:
 	const std::unordered_map<std::string, size_t> sym_table {
 		{"int",1},{"char",2},{"double",3},{"void",4},{"return",5},{"if",6},
 		{"else",7},{"while",8},{"break",9},{"continue",10},{"print",11},
@@ -20,5 +22,4 @@ public:
 	size_t isOperator(const std::string& word);
 	bool isNumber(const std::string& word);
 	bool isVariaty(const std::string& word);
-	std::list<std::pair<size_t, std::string>> analysis(const std::string& code);
 };

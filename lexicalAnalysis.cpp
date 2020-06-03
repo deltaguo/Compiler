@@ -141,7 +141,6 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 			std::cerr << "ERROR:" << e.what() << std::endl;
 			exit(0);
 		}
-		
 	}
 	std::list<std::pair<size_t, std::string>>::iterator iter = res.begin();
 	while(iter!=res.end()) { //´¦Àí>=,<=,==,!=,

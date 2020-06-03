@@ -134,7 +134,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>> list)
 	while (!op.empty())genericMiniTree();
 	return exp.top();
 }
-/*包含算数赋值逻辑表达式*/
+/*生成表达式树*/
 TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	auto i = start;
@@ -209,10 +209,18 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 		}
 		++start;
 	}
-	while (!op.empty()) {
-		if(op.top()!=35)genericMiniTree();
-		else genericNotMiniTree();
+	try {
+		while (!op.empty()) {
+			if (op.top() == 20)throw std::runtime_error("表达式错误!");
+			if (op.top() != 35)genericMiniTree();
+			else genericNotMiniTree();
+		}
 	}
+	catch(const std::exception& e){
+		std::cerr << "ERROR:" << e.what() << std::endl;
+		exit(0);
+	}
+
 	//std::cout << exp.top()->val << std::endl;
 	return exp.top();
 }
@@ -242,7 +250,7 @@ TreeNode* generic::genericLogicExp(std::list<std::pair<size_t, std::string>>::it
 	}
 	return nullptr;
 }
-/*语句*/
+/*生成语法树*/
 generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::string>>::iterator start,std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	generalTreeNode* root = new generalTreeNode("main");
