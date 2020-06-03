@@ -136,7 +136,7 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 		}
 	}
 	std::list<std::pair<size_t, std::string>>::iterator iter = res.begin();
-	while(iter!=res.end()) {
+	while(iter!=res.end()) { //处理>=,<=,==,!=,
 		size_t ch1 = 0,ch2 = 0;
 		ch1 = iter->first;
 		++iter;
@@ -153,9 +153,9 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 			continue;
 		}
 		size_t quotation = iter->first;
-		if (quotation == 14 || quotation == 15) {
+		if (quotation == 14 || quotation == 15) { //处理字符串常量
 			std::string const_str;
-			std::list<std::pair<size_t, std::string>>::iterator now = iter;
+			auto now = iter;
 			++iter;
 			while (iter != res.end() && iter->first != quotation) {
 				const_str.append(iter->second);
@@ -166,6 +166,12 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 			now->first = 102;
 			now->second = const_str;
 			iter = res.erase(++now, ++iter);
+		}//处理逻辑与逻辑或
+		if (quotation == 33 || quotation == 34) {
+			if ((++iter)->first == quotation) {
+				iter->first = quotation + 3;
+				iter = res.erase(--iter);
+			}
 		}
 		++iter;
 	}

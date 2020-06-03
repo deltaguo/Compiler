@@ -30,6 +30,7 @@ TreeNode::TreeNode()
 	this->first_son = nullptr;
 	this->next_bro = nullptr;
 }
+
 generalTreeNode::generalTreeNode(std::string val)
 {
 	this->val = val;
@@ -52,9 +53,8 @@ bool generic::priority(char a, char b)
 }
 
 bool generic::priority(size_t a, size_t b) {
-	if (b == 21 || b == 22)return false;
-	if (a == 21 || a == 22)return true;
-	return false;
+	//a的优先级比b高 return true
+	return priority_table.at(a) < priority_table.at(b);
 }
 
 TreeNode* generic::genericExp(std::string str) {
@@ -95,7 +95,6 @@ TreeNode* generic::genericExp(std::string str) {
 	while (!op.empty())genericMiniTree();
 	return exp.top();
 }
-
 TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>> list)
 {	
 	std::stack<size_t> op;
@@ -135,47 +134,86 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>> list)
 	while (!op.empty())genericMiniTree();
 	return exp.top();
 }
-
+/*包含算数赋值逻辑表达式*/
 TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	auto i = start;
 	std::stack<size_t> op;
 	std::stack<TreeNode*> exp;
 	auto genericMiniTree = [&]() {
-		TreeNode* tmp = new TreeNode(std::to_string(op.top()));
-		op.pop();
-		tmp->right = exp.top();
-		exp.pop();
-		tmp->left = exp.top();
-		exp.pop();
-		tmp->left->next_bro = tmp->right;
-		tmp->first_son = tmp->left;
-		exp.push(tmp);
+		try {
+			if (op.empty() || exp.size() < 2)throw std::runtime_error("表达式错误!");
+			TreeNode* tmp = new TreeNode(std::to_string(op.top()));
+			op.pop();
+			tmp->right = exp.top();
+			exp.pop();
+			tmp->left = exp.top();
+			exp.pop();
+			tmp->left->next_bro = tmp->right;
+			tmp->first_son = tmp->left;
+			exp.push(tmp);
+		}
+		catch (const std::exception& e) {
+			std::cerr << "ERROR:" << e.what() << std::endl;
+			exit(0);
+		}
+	};
+	auto genericNotMiniTree = [&]() {
+		try {
+			if (op.empty() || exp.size() < 1)throw std::runtime_error("表达式错误!");
+			TreeNode* tmp = new TreeNode("35");
+			op.pop();
+			tmp->left = exp.top();
+			exp.pop();
+			tmp->first_son = tmp->left;
+			exp.push(tmp);
+		}
+		catch (const std::exception& e) {
+			std::cerr << "ERROR:" << e.what() << std::endl;
+			exit(0);
+		}
 	};
 	while (start != end) {
 		size_t id = start->first;
-		if (id == 22 || id == 23 || id == 24 || id == 25) {
-			if (!op.empty() && op.top() != 20)
+		if (id >21 && id<100) {
+			if (!op.empty() && op.top() != 20) {
+				if (op.top() == 35) genericNotMiniTree();
 				if (!priority(id, op.top()))genericMiniTree();
+			}
 			op.push(id);
 		}
 		else if (id == 20) {
 			op.push(id);
 		}
 		else if (id == 21) {
-			while (op.top() != 20)genericMiniTree();
-			op.pop();
+			try {
+				while (op.top() != 20) {
+					if (op.top() != 35)genericMiniTree();
+					else genericNotMiniTree();
+					if (op.empty())throw std::runtime_error("表达式错误!");
+				}
+				op.pop();
+			}
+			catch (const std::exception& e) {
+				std::cerr << "ERROR:" << e.what() << std::endl;
+				exit(0);
+			}
+
 		}
 		else if (id == 100 || id == 101 || id == 102) {
 			exp.push(new TreeNode(start->second));
 		}
 		else {
-			std::cout << id << "wrong expression!" << std::endl;
-			return nullptr;
+			std::cerr << "ERROR:表达式错误！" << std::endl;
+			exit(0);
 		}
 		++start;
 	}
-	while (!op.empty())genericMiniTree();
+	while (!op.empty()) {
+		if(op.top()!=35)genericMiniTree();
+		else genericNotMiniTree();
+	}
+	//std::cout << exp.top()->val << std::endl;
 	return exp.top();
 }
 
@@ -188,7 +226,6 @@ TreeNode* generic::genericAssignment(std::list<std::pair<size_t, std::string>>::
 	root->first_son = root->left;
 	return root;
 }
-
 TreeNode* generic::genericLogicExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	std::list<std::pair<size_t, std::string>>::iterator iter = start;
@@ -205,7 +242,7 @@ TreeNode* generic::genericLogicExp(std::list<std::pair<size_t, std::string>>::it
 	}
 	return nullptr;
 }
-
+/*语句*/
 generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::string>>::iterator start,std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	generalTreeNode* root = new generalTreeNode("main");
@@ -229,26 +266,45 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 				p = statement.top()->first_son;
 			}
 			statement.push(p);
-			if (id == 6||id == 8||id == 11) { //if和while后紧跟逻辑表达式 print后紧跟算数表达式
+			if (id == 6||id == 8||id == 11) { //if和while和print后紧跟表达式
 				auto ed = ++iter;
-				if (ed->first != 20) {
-					std::cout << "表达式需要括号括起！";
-					return nullptr;
+				try {
+					if (ed->first != 20) throw std::runtime_error("缺少'('");
+				}
+				catch (const std::exception& e) {
+					std::cerr << "ERROR:" << e.what() << std::endl;
 				}
 				while (1) {
-					if (ed->first == 21) {
+					if (ed!=end && ed->first == 21) {
 						auto next = ++ed;
-						if (next->first == 12 || next->first == 16 || next->first == 100) {
-							--ed;
-							break;
+						try {
+							if (next == end) {
+								throw std::runtime_error("缺少';'");
+							}
+							if (next->first == 12 || next->first == 16 || next->first == 100) {
+								--ed;
+								break;
+							}
+						}
+						catch (const std::exception& e) {
+							std::cout << "ERROR:" << e.what() << std::endl;
+							exit(0);
 						}
 						continue;
 					}
-					++ed;
+					try
+					{
+						if(ed == end)throw std::runtime_error("缺少';'");
+						++ed;
+					}
+					catch (const std::exception& e)
+					{
+						std::cout << "ERROR:" << e.what() << std::endl;
+						exit(0);
+					}
+					
 				}
-				while (ed->first != 21)++ed;
-				if (id == 11) statement.top()->first_son = genericExp(++iter, ed);
-				else statement.top()->first_son = genericLogicExp(++iter, ed);
+				statement.top()->first_son = genericExp(++iter, ed);
 				iter = ed;
 			}
 		}
@@ -256,53 +312,67 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 			edge.push(id);
 		}
 		else if (id == 17 || id == 19 || id == 21) { //处理右括号
-			if (!edge.empty()&&edge.top() == id-1) {
+			try {
+				if (edge.empty() || edge.top() != id - 1) throw std::runtime_error("括号匹配错误!");
 				edge.pop();
-				if(id == 17)statement.pop();
+				if (id == 17)statement.pop();
 			}
-			else {
-				std::cout << "括号匹配错误" << std::endl;
-				return nullptr;
+			catch (const std::exception& e) {
+				std::cerr << "ERROR:" << e.what() << std::endl;
+				exit(0);
 			}
 		}
 		else if (id == 100) {//处理标识符
+			try {
+				if (iter == start)throw std::runtime_error("未声明标识符!");
+			}
+			catch (const std::exception& e) {
+				std::cerr << "ERROR:" << e.what() << std::endl;
+				exit(0);
+			}
 			auto last = --iter;
 			auto ed = ++iter;
-			if ((++ed)->first == 32) { //标识符后接等号说明这是一个赋值表达式
-				if (last->first > 4) {
-					generalTreeNode* p = statement.top()->first_son;
-					if (p) {
-						while (p->next_bro)p = p->next_bro;
-						p->next_bro = new generalTreeNode("103");
-						p = p->next_bro;
-					}
-					else {
-						p = new generalTreeNode("103");
-						statement.top()->first_son = p;
-					}
-					statement.push(p);
-				}
-				while (ed->first != 12 && ed->first != 13)++ed;
+			if (last->first > 4 && last->first != 13) { //新建哨兵节点
 				generalTreeNode* p = statement.top()->first_son;
 				if (p) {
 					while (p->next_bro)p = p->next_bro;
-					p->next_bro = genericAssignment(iter, ed);
+					p->next_bro = new generalTreeNode("103");
+					p = p->next_bro;
 				}
-				else statement.top()->first_son = genericAssignment(iter, ed);
-				iter = --ed;
+				else {
+					p = new generalTreeNode("103");
+					statement.top()->first_son = p;
+				}
+				statement.push(p);
 			}
+			while (ed->first != 12 && ed->first != 13)++ed;
+			generalTreeNode* p = statement.top()->first_son;
+			if (p) {
+				while (p->next_bro)p = p->next_bro;
+				p->next_bro = genericExp(iter, ed);
+			}
+			else statement.top()->first_son = genericExp(iter, ed);
+			iter = --ed;
 		}
 		else if (id == 12) {//分号表示语句结束 可以出栈
-			//std::cout << "分号" << std::endl;
 			statement.pop();
 		}
-		else if(id == 13){}
-		else {
-			std::cout <<iter->first<<" "<<iter->second<< "出现异常！" << std::endl;
-			return nullptr;
+		else if(id == 13){
+			//std::cout << "逗号" << std::endl;
+		}
+		else{
+			std::cerr << "ERROR:非法语句！" << std::endl;
+			exit(0);
 		}
 		++iter;
 	}
-	//std::cout << "stack" << " " << statement.size() << std::endl;
+	try {
+		if (!edge.empty())throw std::runtime_error("缺少'}'");
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << "ERROR:" << e.what() << std::endl;
+		exit(0);
+	}
 	return root;
 }
