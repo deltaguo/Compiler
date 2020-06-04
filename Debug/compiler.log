@@ -1,2 +1,4 @@
-﻿  syntaxAnalysis.cpp
+﻿  main.cpp
+  syntaxAnalysis.cpp
+  正在生成代码...
   compiler.vcxproj -> D:\compiler\Debug\compiler.exe

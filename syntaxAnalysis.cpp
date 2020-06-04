@@ -256,24 +256,30 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 	generalTreeNode* root = new generalTreeNode("main");
 	std::stack<generalTreeNode*> statement;
 	std::stack<size_t> edge;
-	std::stack<std::string> var;
 	statement.push(root);
 	auto iter = start;
 	while (iter != end) {
 		//std::cout <<"**********************"<< iter->first << " " << iter->second << std::endl;
 		size_t id = iter->first;
 		if (id && id < 12) { //处理关键字
-			generalTreeNode* p = statement.top()->first_son;
-			if (p) {
-				while (p->next_bro)p = p->next_bro;
-				p->next_bro = new generalTreeNode(std::to_string(id));
-				p = p->next_bro;
+			try {
+				if (statement.empty())throw std::runtime_error("存在非法分隔符！");
+				generalTreeNode* p = statement.top()->first_son;
+				if (p) {
+					while (p->next_bro)p = p->next_bro;
+					p->next_bro = new generalTreeNode(std::to_string(id));
+					p = p->next_bro;
+				}
+				else {
+					statement.top()->first_son = new generalTreeNode(std::to_string(id));
+					p = statement.top()->first_son;
+				}
+				statement.push(p);
 			}
-			else {
-				statement.top()->first_son = new generalTreeNode(std::to_string(id));
-				p = statement.top()->first_son;
+			catch (const std::exception& e) {
+				std::cerr << "ERROR:" << e.what() << std::endl;
+				exit(0);
 			}
-			statement.push(p);
 			if (id == 6||id == 8||id == 11) { //if和while和print后紧跟表达式
 				auto ed = ++iter;
 				try {
@@ -321,7 +327,7 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 		}
 		else if (id == 17 || id == 19 || id == 21) { //处理右括号
 			try {
-				if (edge.empty() || edge.top() != id - 1) throw std::runtime_error("括号匹配错误!");
+				if (edge.empty() || edge.top() != id - 1) throw std::runtime_error("缺少'{'");
 				edge.pop();
 				if (id == 17)statement.pop();
 			}
@@ -353,7 +359,17 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 				}
 				statement.push(p);
 			}
-			while (ed->first != 12 && ed->first != 13)++ed;
+			while (ed->first != 12 && ed->first != 13) {
+				try {
+					++ed;
+					if (ed == end)throw std::runtime_error("缺少';'");
+				}
+				catch (const std::exception& e) {
+					std::cerr << "ERROR:" << e.what() << std::endl;
+					exit(0);
+				}
+				
+			}
 			generalTreeNode* p = statement.top()->first_son;
 			if (p) {
 				while (p->next_bro)p = p->next_bro;

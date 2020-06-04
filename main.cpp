@@ -6,6 +6,7 @@
 #include "lexicalAnalysis.h"
 #include "syntaxAnalysis.h"
 
+#include<iomanip>
 
 void transf(TreeNode* root);
 void transf(generalTreeNode* root);
@@ -33,7 +34,6 @@ int main(int argc,char *argv[])
         std::cerr << "ERROR:" << e.what() << std::endl;
         exit(0);
     }
-
     scanner sc;
     //预处理
     code = sc.preprocessing(code);
@@ -47,7 +47,9 @@ int main(int argc,char *argv[])
     generic gc;
     generalTreeNode* root = gc.genericStatement(table.begin(), table.end());
     transf(root);
+    std::cout << std::endl;
     read.close();
+
     return 0;
 }
 //二叉树层序遍历 主要用来观察表达式
