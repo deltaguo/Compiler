@@ -3,10 +3,9 @@
 #include <fstream>
 #include <sstream>
 #include <deque>
+#include <windows.h>
 #include "lexicalAnalysis.h"
 #include "syntaxAnalysis.h"
-
-#include<iomanip>
 
 void transf(TreeNode* root);
 void transf(generalTreeNode* root);

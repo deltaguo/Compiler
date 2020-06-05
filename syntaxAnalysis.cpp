@@ -222,7 +222,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	}
 
 	//std::cout << exp.top()->val << std::endl;
-	return exp.top();
+	return exp.empty() ? nullptr : exp.top();
 }
 
 TreeNode* generic::genericAssignment(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end) {
