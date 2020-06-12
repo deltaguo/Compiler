@@ -141,11 +141,13 @@
   <ItemGroup>
     <ClInclude Include="lexicalAnalysis.h" />
     <ClInclude Include="syntaxAnalysis.h" />
+    <ClInclude Include="translator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lexicalAnalysis.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="syntaxAnalysis.cpp" />
+    <ClCompile Include="translator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

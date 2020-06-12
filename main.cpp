@@ -52,7 +52,7 @@ int main(int argc,char *argv[])
     return 0;
 }
 //二叉树层序遍历 主要用来观察表达式
-void transf(TreeNode* root) {
+/*void transf(TreeNode* root) {
     std::vector<std::string> tmp;
     std::deque<TreeNode*> queue;
     int floor(1), nextfloor(0);
@@ -79,11 +79,11 @@ void transf(TreeNode* root) {
             nextfloor = 0;
         }
     }
-}
+}*/
 
 void transf(generalTreeNode* root) {
     if (!root)return;
-    std::cout << root->val << " ";
+    std::cout << "(" << root->val.first << "," << root->val.second << ")" << std::endl;
     generalTreeNode* p = root->first_son;
     while (p) {
         transf(p);

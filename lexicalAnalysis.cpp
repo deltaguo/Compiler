@@ -180,6 +180,12 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 				iter = res.erase(--iter);
 			}
 		}
+		if (quotation == 23) {
+			if ((--iter)->first < 100) {
+				res.insert(++iter, std::make_pair(101, "0"));
+			}
+			else ++iter;
+		}
 		++iter;
 	}
 	return res;

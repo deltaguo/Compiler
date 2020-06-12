@@ -4,7 +4,7 @@
 #include<stack>
 #include<unordered_set>
 
-TreeNode::TreeNode(std::string val)
+TreeNode::TreeNode(std::pair<size_t, std::string> val)
 {
 	this->val = val;
 	this->left = nullptr;
@@ -13,43 +13,11 @@ TreeNode::TreeNode(std::string val)
 	this->next_bro = nullptr;
 }
 
-TreeNode::TreeNode(char val)
-{
-	this->val.push_back(val);
-	this->left = nullptr;
-	this->right = nullptr;
-	this->first_son = nullptr;
-	this->next_bro = nullptr;
-}
-
-TreeNode::TreeNode()
-{
-	this->val = "";
-	this->left = nullptr;
-	this->right = nullptr;
-	this->first_son = nullptr;
-	this->next_bro = nullptr;
-}
-
-generalTreeNode::generalTreeNode(std::string val)
+generalTreeNode::generalTreeNode(std::pair<size_t, std::string> val)
 {
 	this->val = val;
 	this->first_son = nullptr;
 	this->next_bro = nullptr;
-}
-
-generalTreeNode::generalTreeNode()
-{
-	this->val = "";
-	this->first_son = nullptr;
-	this->next_bro = nullptr;
-}
-
-bool generic::priority(char a, char b)
-{
-	if (b == '*' || b == '/')return false;
-	if (a == '*' || a == '/')return true;
-	return false;
 }
 
 bool generic::priority(size_t a, size_t b) {
@@ -57,93 +25,17 @@ bool generic::priority(size_t a, size_t b) {
 	return priority_table.at(a) < priority_table.at(b);
 }
 
-TreeNode* generic::genericExp(std::string str) {
-	std::stack<char> op;
-	std::stack<TreeNode*> exp;
-	auto genericMiniTree = [&]() {
-		TreeNode* tmp = new TreeNode(op.top());
-		op.pop();
-		tmp->right = exp.top();
-		exp.pop();
-		tmp->left = exp.top();
-		exp.pop();
-		tmp->left->next_bro = tmp->right;
-		tmp->first_son = tmp->left;
-		exp.push(tmp);
-	};
-	for (auto i : str) {
-		if (i == '+' || i == '-' || i == '*' || i == '/') {
-			if (!op.empty() && op.top() != '(')
-				if (!priority(i, op.top()))genericMiniTree();
-			op.push(i);
-		}
-		else if (i == '(') {
-			op.push(i);
-		}
-		else if (i == ')') {
-			while (op.top() != '(')genericMiniTree();
-			op.pop();
-		}
-		else if (isalnum(i)) {
-			exp.push(new TreeNode(i));
-		}
-		else {
-			std::cerr << "wrong expression!";
-			return NULL;
-		}
-	}
-	while (!op.empty())genericMiniTree();
-	return exp.top();
-}
-TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>> list)
-{	
-	std::stack<size_t> op;
-	std::stack<TreeNode*> exp;
-	auto genericMiniTree = [&]() {
-		TreeNode* tmp = new TreeNode(std::to_string(op.top()));
-		op.pop();
-		tmp->right = exp.top();
-		exp.pop();
-		tmp->left = exp.top();
-		exp.pop();
-		tmp->left->next_bro = tmp->right;
-		tmp->first_son = tmp->left;
-		exp.push(tmp);
-	};
-	for (auto i : list) {
-		if (i.first == 22 || i.first == 23 || i.first == 24 || i.first == 25) {
-			if (!op.empty() && op.top() != 20)
-				if (!priority(i.first, op.top()))genericMiniTree();
-			op.push(i.first);
-		}
-		else if (i.first == 20) {
-			op.push(i.first);
-		}
-		else if (i.first == 21) {
-			while (op.top() != 17)genericMiniTree();
-			op.pop();
-		}
-		else if (i.first == 100 ||i.first == 101||i.first == 102) {
-			exp.push(new TreeNode(i.second));
-		}
-		else {
-			std::cerr << "wrong expression!";
-			return nullptr;
-		}
-	}
-	while (!op.empty())genericMiniTree();
-	return exp.top();
-}
 /*生成表达式树*/
 TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end)
 {
 	auto i = start;
-	std::stack<size_t> op;
+	std::stack<std::pair<size_t, std::string>> op;
 	std::stack<TreeNode*> exp;
 	auto genericMiniTree = [&]() {
 		try {
 			if (op.empty() || exp.size() < 2)throw std::runtime_error("表达式错误!");
-			TreeNode* tmp = new TreeNode(std::to_string(op.top()));
+			//TreeNode* tmp = new TreeNode(std::to_string(op.top()));
+			TreeNode* tmp = new TreeNode(op.top());
 			op.pop();
 			tmp->right = exp.top();
 			exp.pop();
@@ -161,7 +53,8 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	auto genericNotMiniTree = [&]() {
 		try {
 			if (op.empty() || exp.size() < 1)throw std::runtime_error("表达式错误!");
-			TreeNode* tmp = new TreeNode("35");
+			//TreeNode* tmp = new TreeNode("35");
+			TreeNode* tmp = new TreeNode(op.top());
 			op.pop();
 			tmp->left = exp.top();
 			exp.pop();
@@ -176,19 +69,19 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	while (start != end) {
 		size_t id = start->first;
 		if (id >21 && id<100) {
-			if (!op.empty() && op.top() != 20) {
-				if (op.top() == 35) genericNotMiniTree();
-				if (!priority(id, op.top()))genericMiniTree();
+			if (!op.empty() && op.top().first != 20) {
+				if (op.top().first == 35) genericNotMiniTree();
+				if (!priority(id, op.top().first))genericMiniTree();
 			}
-			op.push(id);
+			op.push(*start);
 		}
 		else if (id == 20) {
-			op.push(id);
+			op.push(*start);
 		}
 		else if (id == 21) {
 			try {
-				while (op.top() != 20) {
-					if (op.top() != 35)genericMiniTree();
+				while (op.top().first != 20) {
+					if (op.top().first != 35)genericMiniTree();
 					else genericNotMiniTree();
 					if (op.empty())throw std::runtime_error("表达式错误!");
 				}
@@ -198,10 +91,9 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 				std::cerr << "ERROR:" << e.what() << std::endl;
 				exit(0);
 			}
-
 		}
 		else if (id == 100 || id == 101 || id == 102) {
-			exp.push(new TreeNode(start->second));
+			exp.push(new TreeNode(*start));
 		}
 		else {
 			std::cerr << "ERROR:表达式错误！" << std::endl;
@@ -211,8 +103,8 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	}
 	try {
 		while (!op.empty()) {
-			if (op.top() == 20)throw std::runtime_error("表达式错误!");
-			if (op.top() != 35)genericMiniTree();
+			if (op.top().first == 20)throw std::runtime_error("表达式错误!");
+			if (op.top().first != 35)genericMiniTree();
 			else genericNotMiniTree();
 		}
 	}
@@ -225,35 +117,10 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	return exp.empty() ? nullptr : exp.top();
 }
 
-TreeNode* generic::genericAssignment(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end) {
-	TreeNode* root = new TreeNode("32");
-	root->left = new TreeNode(start->second);
-	++(++start);
-	root->right = genericExp(start,end);
-	root->left->next_bro = root->right;
-	root->first_son = root->left;
-	return root;
-}
-TreeNode* generic::genericLogicExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end)
-{
-	std::list<std::pair<size_t, std::string>>::iterator iter = start;
-	while (iter != end) {
-		if (iter->first > 25 && iter->first < 32) {
-			TreeNode* root = new TreeNode(std::to_string(iter->first));
-			root->left = genericExp(start, iter);
-			root->right = genericExp(++iter, end);
-			root->left->next_bro = root->right;
-			root->first_son = root->left;
-			return root;
-		}
-		++iter;
-	}
-	return nullptr;
-}
 /*生成语法树*/
 generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::string>>::iterator start,std::list<std::pair<size_t, std::string>>::iterator end)
 {
-	generalTreeNode* root = new generalTreeNode("main");
+	generalTreeNode* root = new generalTreeNode(std::make_pair(0,"main"));
 	std::stack<generalTreeNode*> statement;
 	std::stack<size_t> edge;
 	statement.push(root);
@@ -267,11 +134,11 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 				generalTreeNode* p = statement.top()->first_son;
 				if (p) {
 					while (p->next_bro)p = p->next_bro;
-					p->next_bro = new generalTreeNode(std::to_string(id));
+					p->next_bro = new generalTreeNode(*iter);
 					p = p->next_bro;
 				}
 				else {
-					statement.top()->first_son = new generalTreeNode(std::to_string(id));
+					statement.top()->first_son = new generalTreeNode(*iter);
 					p = statement.top()->first_son;
 				}
 				statement.push(p);
@@ -350,11 +217,11 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 				generalTreeNode* p = statement.top()->first_son;
 				if (p) {
 					while (p->next_bro)p = p->next_bro;
-					p->next_bro = new generalTreeNode("103");
+					p->next_bro = new generalTreeNode(std::make_pair(103,"算数表达式"));
 					p = p->next_bro;
 				}
 				else {
-					p = new generalTreeNode("103");
+					p = new generalTreeNode(std::make_pair(103, "算数表达式"));
 					statement.top()->first_son = p;
 				}
 				statement.push(p);
