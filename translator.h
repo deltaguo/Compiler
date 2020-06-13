@@ -3,6 +3,8 @@
 #include<string>
 #include "syntaxAnalysis.h"
 
+#define TEMPORARY "¼Ä´æÆ÷"
+
 class translator
 {
 public:
@@ -14,12 +16,4 @@ public:
 private:
 
 };
-
-translator::translator()
-{
-}
-
-translator::~translator()
-{
-}
 

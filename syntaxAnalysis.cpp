@@ -13,9 +13,23 @@ TreeNode::TreeNode(std::pair<size_t, std::string> val)
 	this->next_bro = nullptr;
 }
 
+TreeNode::TreeNode()
+{
+	this->left = nullptr;
+	this->right = nullptr;
+	this->first_son = nullptr;
+	this->next_bro = nullptr;
+}
+
 generalTreeNode::generalTreeNode(std::pair<size_t, std::string> val)
 {
 	this->val = val;
+	this->first_son = nullptr;
+	this->next_bro = nullptr;
+}
+
+generalTreeNode::generalTreeNode()
+{
 	this->first_son = nullptr;
 	this->next_bro = nullptr;
 }

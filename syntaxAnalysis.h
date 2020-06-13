@@ -5,7 +5,7 @@
 class generalTreeNode {
 public:
 	generalTreeNode(std::pair<size_t, std::string> val);
-	generalTreeNode() {};
+	generalTreeNode();
 	~generalTreeNode() {};
 	//std::string val;
 	std::pair<size_t, std::string> val;
@@ -16,7 +16,7 @@ class TreeNode:public generalTreeNode
 {
 public:
 	TreeNode(std::pair<size_t, std::string> val);
-	TreeNode() {};
+	TreeNode();
 	~TreeNode() {};
 	TreeNode* left;
 	TreeNode* right;

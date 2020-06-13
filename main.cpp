@@ -6,9 +6,11 @@
 #include <windows.h>
 #include "lexicalAnalysis.h"
 #include "syntaxAnalysis.h"
+#include "translator.h"
 
 void transf(TreeNode* root);
 void transf(generalTreeNode* root);
+void printQuaternion(std::vector<std::vector<std::pair<size_t, std::string>>> list);
 
 int main(int argc,char *argv[])
 {
@@ -33,20 +35,26 @@ int main(int argc,char *argv[])
         std::cerr << "ERROR:" << e.what() << std::endl;
         exit(0);
     }
+    
     scanner sc;
-    //预处理
     code = sc.preprocessing(code);
-    //std::cout << code << std::endl;
-    //标识符识别
+    std::cout << "预处理结果：" << std::endl;
+    std::cout << code << std::endl;
+    std::cout << "*******************************" << std::endl;
     auto table = sc.analysis(code);
-    /*for (auto i : table) {
+    std::cout << "词法分析结果：" << std::endl;
+    for (auto i : table) {
         std::cout << i.first << "     " << i.second << std::endl;
-    }*/
-    //语法分析 并生成树
+    }
+    std::cout << "*******************************" << std::endl;
     generic gc;
     generalTreeNode* root = gc.genericStatement(table.begin(), table.end());
+    std::cout <<"语法分析树：(多叉树先根遍历)"<< std::endl;
     transf(root);
-    std::cout << std::endl;
+    std::cout << "*******************************" << std::endl;
+    translator t;
+    //auto res = t.getExpTuple(root->first_son->next_bro->first_son);
+    //printQuaternion(res);
     read.close();
 
     return 0;
@@ -100,6 +108,17 @@ void transf(generalTreeNode* root) {
         }
 
     }*/
+}
+
+void printQuaternion(std::vector<std::vector<std::pair<size_t, std::string>>> list)
+{
+    for (auto i : list) {
+        std::cout << "{";
+        for (auto j : i) {
+            std::cout << "(" << j.first << "," << j.second << ")";
+        }
+        std::cout << "}" << std::endl;
+    }
 }
 
 
