@@ -14,7 +14,7 @@ void printQuaternion(std::vector<std::vector<std::pair<size_t, std::string>>> li
 
 int main(int argc,char *argv[])
 {
-    //string filename = argv[1];
+    //std::string filename = argv[1];
     std::string filename = "C:\\Users\\11814\\Desktop\\1.txt";
     std::string code;
     std::ifstream read;
@@ -42,9 +42,9 @@ int main(int argc,char *argv[])
     std::cout << code << std::endl;
     std::cout << "*******************************" << std::endl;
     auto table = sc.analysis(code);
-    std::cout << "词法分析结果：" << std::endl;
+    std::cout << "词法分析结果：（二元组双向链表）" << std::endl;
     for (auto i : table) {
-        std::cout << i.first << "     " << i.second << std::endl;
+        std::cout << "(" << i.first << "," << i.second << ")" << std::endl;
     }
     std::cout << "*******************************" << std::endl;
     generic gc;
@@ -53,15 +53,18 @@ int main(int argc,char *argv[])
     transf(root);
     std::cout << "*******************************" << std::endl;
     translator t;
-    //auto res = t.getExpTuple(root->first_son->next_bro->first_son);
-    //printQuaternion(res);
+    auto res = t.getTuple(root);
+    std::cout << "语义分析结果：(四元组伪汇编)" << std::endl;
+    printQuaternion(res);
+    
+
     read.close();
 
     return 0;
 }
 //二叉树层序遍历 主要用来观察表达式
-/*void transf(TreeNode* root) {
-    std::vector<std::string> tmp;
+void transf(TreeNode* root) {
+    std::vector<std::pair<size_t, std::string>> tmp;
     std::deque<TreeNode*> queue;
     int floor(1), nextfloor(0);
     if (root)queue.push_back(root);
@@ -79,7 +82,7 @@ int main(int argc,char *argv[])
         }
         if (tmp.size() == floor) {
             for (auto i : tmp) {
-                std::cout << i << " ";
+                std::cout << "(" << i.first << "," << i.second << ")";
             }
             std::cout << std::endl;
             tmp.clear();
@@ -87,7 +90,7 @@ int main(int argc,char *argv[])
             nextfloor = 0;
         }
     }
-}*/
+}
 
 void transf(generalTreeNode* root) {
     if (!root)return;
@@ -97,17 +100,6 @@ void transf(generalTreeNode* root) {
         transf(p);
         p = p->next_bro;
     }
-    /*
-    std::deque<std::string> queue;
-    auto p = root;
-    while (p || !queue.empty()) {
-        auto q = p->first_son;
-        while (q->next_bro) {
-            queue.push_back(q->val);
-            q = q->next_bro;
-        }
-
-    }*/
 }
 
 void printQuaternion(std::vector<std::vector<std::pair<size_t, std::string>>> list)

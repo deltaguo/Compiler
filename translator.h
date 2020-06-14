@@ -13,6 +13,7 @@ public:
 	size_t to_number(std::string str);
 	std::vector<std::vector<std::pair<size_t,std::string>>> getExpTuple(generalTreeNode* root);
 	std::vector<std::vector<std::pair<size_t, std::string>>> getTuple(generalTreeNode* root);
+	size_t count_instruction(generalTreeNode* root);
 private:
 
 };

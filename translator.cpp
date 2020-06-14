@@ -24,6 +24,11 @@ inline size_t translator::to_number(std::string str)
 
 std::vector<std::vector<std::pair<size_t, std::string>>> translator::getExpTuple(generalTreeNode* root)
 {
+	if (root->val.first == 100) {
+		return { 
+			{ root->val,{0,"-"},{0,"-"},{0,"-"} } 
+		};
+	}
 	std::vector<std::vector<std::pair<size_t, std::string>>> res;
 	std::stack<generalTreeNode*> father;
 	std::stack<std::pair<size_t, std::string>> tmp;
@@ -84,7 +89,165 @@ std::vector<std::vector<std::pair<size_t, std::string>>> translator::getExpTuple
 	return res;
 }
 
+size_t translator::count_instruction(generalTreeNode* root)
+{
+	size_t count = 0;
+	auto q = root;
+	std::stack<generalTreeNode*> s;
+	while (q||!s.empty()) {
+		if (q) {
+			s.push(q);
+			q = q->first_son;
+		}
+		else {
+			q = s.top();
+			s.pop();
+			if (q->val.second == "关键字" || q->val.second == "运算符") {
+				++count;
+			}
+			q = q->next_bro;
+		}
+	}
+	return count;
+}
 
 std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(generalTreeNode* root) {
-	return { {} };
+	std::vector<std::vector<std::pair<size_t, std::string>>> res;
+	size_t address = 0;
+	auto p = root;
+	std::stack<generalTreeNode*> father;
+	std::stack<std::pair<generalTreeNode*, std::vector<size_t>>> loop;
+	bool output = false;
+	while (p||!father.empty()) {
+		if (p) {
+			if (p->val.second == "关键字") {
+				if (p->val.first < 5) {
+					auto q = p->first_son;
+					size_t count = 1;
+					//如果q为空 抛出异常
+					while (q) {
+						q = q->next_bro;
+						++count;
+					}
+					res.push_back({
+							p->val,
+							{count,"声明标识符数量"},
+							{0,"-"},
+							{++address,"下一条指令地址"}
+						});
+				}
+				else if (p->val.first < 6) {
+					//return -->meanless end of program
+					res.push_back({
+							p->val,
+							{0,"程序结束"},
+							{0,"-"},
+							{0,"-"}
+						});
+				}
+				else if (p->val.first < 7) {
+					//if语句
+					/*
+							此处处理第一个子树表达式
+					*/
+					res.push_back({
+						{0,"jmp"},
+						{0,"-"},
+						{++address,"为真"},
+						{count_instruction(p) + address,"为假"}
+						});
+				}
+				else if (p->val.first < 8) {
+					//else 语句
+
+				}
+				else if (p->val.first < 9) {
+					//while语句
+					size_t sum = count_instruction(p);
+					size_t judge = count_instruction(p->first_son);
+					loop.push({ p->first_son , {address,judge,sum} });
+				}
+				else if (p->val.first < 10) {
+					//break
+					res.push_back({
+						{0,"jmp"},
+						{0,"-"},
+						{0,"-"},
+						{loop.top().second[0] + loop.top().second[2],"下一条指令地址"},
+						});
+				}
+				else if (p->val.first < 11) {
+					//continue
+					res.push_back({
+						{0,"jmp"},
+						{0,"-"},
+						{0,"-"},
+						{loop.top().second[0]+ loop.top().second[2]- loop.top().second[1],"下一条指令地址"},
+						});
+				}
+				else if (p->val.first < 12) {
+					//print
+					output = true;
+				}
+				father.push(p);
+				p = p->first_son;
+			}
+			else if (p->val.second == "运算符") {
+				/*
+				算术表达式代码
+				*/
+				p = father.top();
+				father.pop();
+				p = p->next_bro;
+			}
+			else if (p->val.first>99) {
+				std::vector<std::vector<std::pair<size_t, std::string>>> exp;
+				if (p->val.first == 103)exp = getExpTuple(p->first_son);
+				else exp = getExpTuple(p);
+				res.insert(res.end(), exp.begin(), exp.end());
+				p = p->next_bro;
+			}
+			else if (p->val.second == "main") {
+				father.push(p);
+				p = p->first_son;
+			}
+			else{
+				std::cerr <<p->val.first<<","<<p->val.second<< "语法错误" << std::endl;
+				exit(0);
+			}
+		}
+		else {
+			//如果存在循环条件
+			if (!loop.empty()) {
+				auto q = loop.top().first;
+				size_t destination = loop.top().second[0];
+				loop.pop();
+				/*
+					处理循环判断表达式
+				*/
+				res.push_back({
+						{0,"jmp"},
+						{0,"-"},
+						{destination,"为真"},
+						{++address,"为假"},
+					});
+
+			}
+			//如果需要输出结果
+			if (output) {
+				res.push_back({
+					{0,"output"},
+					{0,res.back()[3].second},
+					{0,"-"},
+					{++address,"下一条指令地址"}
+					});
+			}
+
+			p = father.top();
+			father.pop();
+			p = p->next_bro;
+		}
+		++address;
+	}
+	return res;
 }
