@@ -1,6 +1,14 @@
 #pragma once
 #include<unordered_map>
 
+#define KEYWORD "关键字"
+#define SEPARATOR "分隔符"
+#define OPERATOR "运算符"
+#define EXPRESSION "算术表达式"
+
+//defined exception message
+#define ILLEGAL_WORD "非法单词"
+
 class scanner
 {
 public:

@@ -1,7 +1,22 @@
 #pragma once
 #include<string>
 #include<list>
-#include <unordered_map>
+#include<unordered_map>
+#include"lexicalAnalysis.h"
+
+//define exception message
+#define ILLEGAL_EXPRESSION "非法表达式"
+#define ILLEGAL_SEPARATOR "非法分隔符"
+#define ILLEGAL_STATEMENT "非法语句"
+
+#define LACK_OF_LEFT_PARENTHESE "缺少'('"
+#define LACK_OF_RIGHT_PARENTHESE "缺少')'"
+#define LACK_OF_LEFT_BRACKET "缺少'['"
+#define LACK_OF_RIGHT_BRACKET "缺少']'"
+#define LACK_OF_LEFT_BRACE "缺少'{'"
+#define LACK_OF_RIGHT_BRACE "缺少'}'"
+#define LACK_OF_SEMICOLON "缺少';'"
+
 class generalTreeNode {
 public:
 	generalTreeNode(std::pair<size_t, std::string> val);

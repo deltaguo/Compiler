@@ -54,7 +54,7 @@ int main(int argc,char *argv[])
     std::cout << "*******************************" << std::endl;
     translator t;
     auto res = t.getTuple(root);
-    std::cout << "语义分析结果：(四元组伪汇编)" << std::endl;
+    std::cout << "语义分析结果：(四元组向量--伪汇编)" << std::endl;
     printQuaternion(res);
     
 
@@ -104,8 +104,9 @@ void transf(generalTreeNode* root) {
 
 void printQuaternion(std::vector<std::vector<std::pair<size_t, std::string>>> list)
 {
+    size_t add = 0;
     for (auto i : list) {
-        std::cout << "{";
+        std::cout <<"地址编号: "<<add++<<" "<< "{";
         for (auto j : i) {
             std::cout << "(" << j.first << "," << j.second << ")";
         }

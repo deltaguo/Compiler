@@ -86,7 +86,7 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 	auto insertWord = [&]() {
 		size_t id = isKeyWord(word);
 		if (id) {
-			res.push_back(std::make_pair(id, "关键字"));
+			res.push_back(std::make_pair(id, KEYWORD));
 			word.clear();
 		}
 		else {
@@ -95,19 +95,26 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 				word.clear();
 			}
 			else {
-				if (isVariaty(word)) {
-					res.push_back(std::make_pair(100, word));
-					word.clear();
+				try {
+					if (isVariaty(word)) {
+						res.push_back(std::make_pair(100, word));
+						word.clear();
+					}
+					else {
+						throw std::runtime_error(ILLEGAL_WORD);
+					}
 				}
-				else {
-					std::cout << "出现非法单词!" << std::endl;
+				catch (const std::exception& e) {
+					std::cerr << "ERROR:" << e.what() << std::endl;
+					exit(0);
 				}
+
 			}
 		}
 	};
 	for (char ch : code) {
 		try {
-			if (!isascii(ch))throw std::runtime_error("非法字符!");
+			if (!isascii(ch))throw std::runtime_error(ILLEGAL_WORD);
 			if (ch != ' ') {
 				std::string c;
 				c.push_back(ch);
@@ -117,7 +124,7 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 						insertWord();
 						word.clear();
 					}
-					res.push_back(std::make_pair(id, "分隔符"));
+					res.push_back(std::make_pair(id, SEPARATOR));
 				}
 				else {
 					id = isOperator(c);
@@ -126,7 +133,7 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 							insertWord();
 							word.clear();
 						}
-						res.push_back(std::make_pair(id, "运算符"));
+						res.push_back(std::make_pair(id, OPERATOR));
 					}
 					else {
 						word.push_back(ch);
@@ -185,6 +192,14 @@ std::list<std::pair<size_t, std::string>> scanner::analysis(const std::string& c
 				res.insert(++iter, std::make_pair(101, "0"));
 			}
 			else ++iter;
+		}//处理数组变量
+		if (quotation == 18) {
+			auto last = --iter;
+			auto size = ++(++iter);
+			auto end = ++(++iter);
+			std::pair<size_t, std::string> arrayname = { 104,last->second + "[" + size->second + "]" };
+			iter = res.erase(last,end);
+			res.insert(iter, arrayname);
 		}
 		++iter;
 	}

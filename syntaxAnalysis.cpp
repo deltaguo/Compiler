@@ -47,7 +47,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	std::stack<TreeNode*> exp;
 	auto genericMiniTree = [&]() {
 		try {
-			if (op.empty() || exp.size() < 2)throw std::runtime_error("表达式错误!");
+			if (op.empty() || exp.size() < 2)throw std::runtime_error(ILLEGAL_EXPRESSION);
 			//TreeNode* tmp = new TreeNode(std::to_string(op.top()));
 			TreeNode* tmp = new TreeNode(op.top());
 			op.pop();
@@ -66,7 +66,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 	};
 	auto genericNotMiniTree = [&]() {
 		try {
-			if (op.empty() || exp.size() < 1)throw std::runtime_error("表达式错误!");
+			if (op.empty() || exp.size() < 1)throw std::runtime_error(ILLEGAL_EXPRESSION);
 			//TreeNode* tmp = new TreeNode("35");
 			TreeNode* tmp = new TreeNode(op.top());
 			op.pop();
@@ -85,7 +85,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 		if (id >21 && id<100) {
 			if (!op.empty() && op.top().first != 20) {
 				if (op.top().first == 35) genericNotMiniTree();
-				if (!priority(id, op.top().first))genericMiniTree();
+				if (!op.empty()&&!priority(id, op.top().first))genericMiniTree();
 			}
 			op.push(*start);
 		}
@@ -97,7 +97,7 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 				while (op.top().first != 20) {
 					if (op.top().first != 35)genericMiniTree();
 					else genericNotMiniTree();
-					if (op.empty())throw std::runtime_error("表达式错误!");
+					if (op.empty())throw std::runtime_error(ILLEGAL_EXPRESSION);
 				}
 				op.pop();
 			}
@@ -106,18 +106,18 @@ TreeNode* generic::genericExp(std::list<std::pair<size_t, std::string>>::iterato
 				exit(0);
 			}
 		}
-		else if (id == 100 || id == 101 || id == 102) {
+		else if (id == 100 || id == 101 || id == 102 || id == 104) {
 			exp.push(new TreeNode(*start));
 		}
 		else {
-			std::cerr << "ERROR:表达式错误！" << std::endl;
+			std::cerr << "ERROR:" << ILLEGAL_EXPRESSION << std::endl;
 			exit(0);
 		}
 		++start;
 	}
 	try {
 		while (!op.empty()) {
-			if (op.top().first == 20)throw std::runtime_error("表达式错误!");
+			if (op.top().first == 20)throw std::runtime_error(ILLEGAL_EXPRESSION);
 			if (op.top().first != 35)genericMiniTree();
 			else genericNotMiniTree();
 		}
@@ -140,11 +140,10 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 	statement.push(root);
 	auto iter = start;
 	while (iter != end) {
-		//std::cout <<"**********************"<< iter->first << " " << iter->second << std::endl;
 		size_t id = iter->first;
 		if (id && id < 12) { //处理关键字
 			try {
-				if (statement.empty())throw std::runtime_error("存在非法分隔符！");
+				if (statement.empty())throw std::runtime_error(ILLEGAL_SEPARATOR);
 				generalTreeNode* p = statement.top()->first_son;
 				if (p) {
 					while (p->next_bro)p = p->next_bro;
@@ -164,7 +163,7 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 			if (id == 6||id == 8||id == 11) { //if和while和print后紧跟表达式
 				auto ed = ++iter;
 				try {
-					if (ed->first != 20) throw std::runtime_error("缺少'('");
+					if (ed->first != 20) throw std::runtime_error(LACK_OF_LEFT_PARENTHESE);
 				}
 				catch (const std::exception& e) {
 					std::cerr << "ERROR:" << e.what() << std::endl;
@@ -174,9 +173,9 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 						auto next = ++ed;
 						try {
 							if (next == end) {
-								throw std::runtime_error("缺少';'");
+								throw std::runtime_error(LACK_OF_SEMICOLON);
 							}
-							if (next->first == 12 || next->first == 16 || next->first == 100) {
+							if (next->first == 12 || next->first == 16 || next->first == 100 || next->first == 104) {
 								--ed;
 								break;
 							}
@@ -189,7 +188,7 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 					}
 					try
 					{
-						if(ed == end)throw std::runtime_error("缺少';'");
+						if(ed == end)throw std::runtime_error(LACK_OF_SEMICOLON);
 						++ed;
 					}
 					catch (const std::exception& e)
@@ -208,7 +207,7 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 		}
 		else if (id == 17 || id == 19 || id == 21) { //处理右括号
 			try {
-				if (edge.empty() || edge.top() != id - 1) throw std::runtime_error("缺少'{'");
+				if (edge.empty() || edge.top() != id - 1) throw std::runtime_error(LACK_OF_RIGHT_BRACE);
 				edge.pop();
 				if (id == 17)statement.pop();
 			}
@@ -217,9 +216,9 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 				exit(0);
 			}
 		}
-		else if (id == 100) {//处理标识符
+		else if (id == 100 || id == 104) {//处理标识符
 			try {
-				if (iter == start)throw std::runtime_error("未声明标识符!");
+				if (iter == start)throw std::runtime_error(ILLEGAL_EXPRESSION);
 			}
 			catch (const std::exception& e) {
 				std::cerr << "ERROR:" << e.what() << std::endl;
@@ -231,11 +230,11 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 				generalTreeNode* p = statement.top()->first_son;
 				if (p) {
 					while (p->next_bro)p = p->next_bro;
-					p->next_bro = new generalTreeNode(std::make_pair(103,"算数表达式"));
+					p->next_bro = new generalTreeNode(std::make_pair(103, EXPRESSION));
 					p = p->next_bro;
 				}
 				else {
-					p = new generalTreeNode(std::make_pair(103, "算数表达式"));
+					p = new generalTreeNode(std::make_pair(103, EXPRESSION));
 					statement.top()->first_son = p;
 				}
 				statement.push(p);
@@ -243,7 +242,7 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 			while (ed->first != 12 && ed->first != 13) {
 				try {
 					++ed;
-					if (ed == end)throw std::runtime_error("缺少';'");
+					if (ed == end)throw std::runtime_error(LACK_OF_SEMICOLON);
 				}
 				catch (const std::exception& e) {
 					std::cerr << "ERROR:" << e.what() << std::endl;
@@ -266,13 +265,13 @@ generalTreeNode* generic::genericStatement(std::list<std::pair<size_t, std::stri
 			//std::cout << "逗号" << std::endl;
 		}
 		else{
-			std::cerr << "ERROR:非法语句！" << std::endl;
+			std::cerr << "ERROR:" << ILLEGAL_STATEMENT << std::endl;
 			exit(0);
 		}
 		++iter;
 	}
 	try {
-		if (!edge.empty())throw std::runtime_error("缺少'}'");
+		if (!edge.empty())throw std::runtime_error(LACK_OF_RIGHT_BRACE);
 	}
 	catch (const std::exception& e)
 	{
