@@ -49,6 +49,7 @@
 #define DECLARE_TYPE "声明类型"
 #define DECLARE_NUMBER "声明数量"
 #define END_OF_PROGRAM "程序结束"
+#define CONDITIONAL "条件转移"
 #define UNCONDITIONAL "无条件转移"
 #define RESULT "结果寄存器"
 #define IS_TRUE "结果寄存器为真则转移至"

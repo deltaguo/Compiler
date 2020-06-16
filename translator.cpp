@@ -123,9 +123,9 @@ size_t translator::count_instruction(generalTreeNode* root)
 
 std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(generalTreeNode* root) {
 	std::vector<std::vector<std::pair<size_t, std::string>>> res;
-	auto p = root;
+	auto p = root, last = p;
 	std::stack<generalTreeNode*> father;
-	std::stack<std::pair<generalTreeNode*, std::vector<size_t>>> loop;
+	std::stack<std::vector<size_t>> loop;
 	std::stack<size_t> if_term;
 	size_t esc = 0;
 	bool output = false;
@@ -170,7 +170,7 @@ std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(ge
 				}
 				else if (p->val.first < 7) {
 					//if
-					auto have_else = p->next_bro->val.first == 8?1:0;
+					size_t have_else = p->next_bro&&p->next_bro->val.first == 7?1:0;
 					if_term.push(count_instruction(p->first_son->next_bro) + have_else);
 				}
 				else if (p->val.first < 8) {
@@ -187,14 +187,14 @@ std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(ge
 
 					size_t sum = count_instruction(p);
 					size_t judge = count_instruction(p->first_son);
-					loop.push({ p->first_son , {res.size(),judge,sum} });
+					loop.push({res.size(),judge,sum} );
 					
 					if_term.push(sum-judge);
 				}
 				else if (p->val.first < 10) {
 					//break
 					res.push_back({
-						{loop.top().second[0] + loop.top().second[2],UNCONDITIONAL},
+						{loop.top()[0] + loop.top()[2],UNCONDITIONAL},
 						{0,"-"},
 						{0,"-"},
 						{0,"-"},
@@ -203,7 +203,7 @@ std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(ge
 				else if (p->val.first < 11) {
 					//continue
 					res.push_back({
-						{loop.top().second[0] + loop.top().second[2] - loop.top().second[1],UNCONDITIONAL},
+						{loop.top()[0] + loop.top()[2] - loop.top()[1],UNCONDITIONAL},
 						{0,"-"},
 						{0,"-"},
 						{0,"-"},
@@ -225,8 +225,8 @@ std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(ge
 						size_t length = if_term.top();
 						if_term.pop();
 						res.push_back({
-							{length + res.size() + 2,IS_FALSE},
-							{0,"-"},
+							{length + res.size() + 2,CONDITIONAL},
+							{0,IS_FALSE},
 							{0,"-"},
 							{0,"-"}
 							});
@@ -235,8 +235,8 @@ std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(ge
 						size_t length = if_term.top();
 						if_term.pop();
 						res.push_back({
-							{length + res.size(),IS_FALSE},
-							{0,"-"},
+							{length + res.size(),CONDITIONAL},
+							{0,IS_FALSE},
 							{0,"-"},
 							{0,"-"}
 							});
@@ -270,8 +270,8 @@ std::vector<std::vector<std::pair<size_t, std::string>>> translator::getTuple(ge
 		else {
 			//如果存在循环条件
 			if (!loop.empty()&& father.top()->val.first == 8) {
-				auto q = loop.top().first;
-				size_t destination = loop.top().second[0];
+				//auto q = loop.top().first;
+				size_t destination = loop.top()[0];
 				loop.pop();
 				res.push_back({
 						{destination,UNCONDITIONAL},
