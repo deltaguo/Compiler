@@ -1,2 +1,9 @@
-﻿  translator.cpp
+﻿  lexicalAnalysis.cpp
+D:\Compiler\lexicalAnalysis.cpp(9,20): warning C4018: “<”: 有符号/无符号不匹配
+D:\Compiler\lexicalAnalysis.cpp(14,13): warning C4018: “<”: 有符号/无符号不匹配
+D:\Compiler\lexicalAnalysis.cpp(21,13): warning C4018: “<”: 有符号/无符号不匹配
+  main.cpp
+  syntaxAnalysis.cpp
+  translator.cpp
+  正在生成代码...
   compiler.vcxproj -> D:\Compiler\Debug\compiler.exe

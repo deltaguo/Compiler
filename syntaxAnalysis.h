@@ -4,7 +4,7 @@
 #include<unordered_map>
 #include"lexicalAnalysis.h"
 
-//define exception message
+//exception message
 #define ILLEGAL_EXPRESSION "非法表达式"
 #define ILLEGAL_SEPARATOR "非法分隔符"
 #define ILLEGAL_STATEMENT "非法语句"
@@ -17,7 +17,8 @@
 #define LACK_OF_RIGHT_BRACE "缺少'}'"
 #define LACK_OF_SEMICOLON "缺少';'"
 
-class generalTreeNode {
+class generalTreeNode
+{
 public:
 	generalTreeNode(std::pair<size_t, std::string> val);
 	generalTreeNode();
@@ -27,7 +28,8 @@ public:
 	generalTreeNode* first_son;
 	generalTreeNode* next_bro;
 };
-class TreeNode:public generalTreeNode
+
+class TreeNode :public generalTreeNode
 {
 public:
 	TreeNode(std::pair<size_t, std::string> val);
@@ -36,11 +38,14 @@ public:
 	TreeNode* left;
 	TreeNode* right;
 };
+
 class generic{
 public:
+	//generic a tree according to the range between two iterator
 	generalTreeNode* genericStatement(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end);
 private:
-	const std::unordered_map<size_t,size_t> priority_table{
+	//priority table
+	const std::unordered_map<size_t, size_t> priority_table{
 		{35,0},{24,1},{25,1},{38,1},{22,2},{23,2},{26,3},{27,3},{29,3},{30,3},{28,4},{31,4},
 		{33,5},{34,6},{36,7},{37,8},{32,9}
 	};
@@ -50,5 +55,6 @@ private:
 	"&","|","!","&&","||","%"
 	};
 	bool priority(size_t a, size_t b);
+	//generic a expression tree according to the range between two iterator
 	TreeNode* genericExp(std::list<std::pair<size_t, std::string>>::iterator start, std::list<std::pair<size_t, std::string>>::iterator end);
 };
