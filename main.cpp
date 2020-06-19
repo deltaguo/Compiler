@@ -7,6 +7,9 @@
 #include "syntaxAnalysis.h"
 #include "translator.h"
 
+
+std::string readFile(std::string filename);
+void exec(std::string code);
 void transf(TreeNode* root);
 void transf(generalTreeNode* root);
 void printQuaternion(std::vector<std::vector<std::pair<size_t, std::string>>> list);
@@ -15,6 +18,13 @@ int main(int argc, char* argv[])
 {
 	//std::string filename = argv[1];
 	std::string filename = "C:\\Users\\11814\\Desktop\\1.txt";
+	std::string code = readFile(filename);
+	exec(code);
+	return 0;
+}
+
+std::string readFile(std::string filename)
+{
 	std::string code;
 	std::ifstream read;
 	try
@@ -35,7 +45,12 @@ int main(int argc, char* argv[])
 		std::cerr << "ERROR:" << e.what() << std::endl;
 		exit(0);
 	}
+	read.close();
+	return code;
+}
 
+void exec(std::string code)
+{
 	scanner sc;
 	code = sc.preprocessing(code);
 	std::cout << "预处理结果：" << std::endl;
@@ -57,13 +72,8 @@ int main(int argc, char* argv[])
 	auto res = t.getTuple(root);
 	std::cout << "语义分析结果：(四元组向量--伪汇编)" << std::endl;
 	printQuaternion(res);
-
-
-	read.close();
-
-	return 0;
 }
-//二叉树层序遍历 主要用来观察表达式
+
 void transf(TreeNode* root)
 {
 	std::vector<std::pair<size_t, std::string>> tmp;
