@@ -17,7 +17,7 @@ void printQuaternion(std::vector<std::vector<std::pair<size_t, std::string>>> li
 int main(int argc, char* argv[])
 {
 	//std::string filename = argv[1];
-	std::string filename = "C:\\Users\\11814\\Desktop\\1.txt";
+	std::string filename = "test.txt";
 	std::string code = readFile(filename);
 	exec(code);
 	return 0;

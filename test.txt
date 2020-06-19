@@ -1,0 +1,20 @@
+/*
+this is annotation
+
+the language syntax is listed
+
+*/
+
+int aaa=10,bbb=20;
+while(aaa>0){
+bbb=bbb-1;
+	if(!bbb){
+a=a+1;
+	continue;
+}else{
+break;
+}
+}
+return;
+
+//end of program
