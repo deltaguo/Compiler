@@ -9,8 +9,8 @@ Curriculum design in junior year.
 
 input:
 
-![input](img\input.png)
+![input](https://raw.githubusercontent.com/InvincibleDelta/Compiler/master/img/input.png)
 
 output:
 
-![output](img\output.png)
+![output](https://raw.githubusercontent.com/InvincibleDelta/Compiler/master/img/output.png)
