@@ -9,8 +9,8 @@ Curriculum design in junior year.
 
 input:
 
-![input](D:\Compiler\img\input.png)
+![input](img\input.png)
 
 output:
 
-![output](D:\Compiler\img\output.png)
+![output](img\output.png)
